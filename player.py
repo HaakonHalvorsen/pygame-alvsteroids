@@ -1,4 +1,5 @@
 import math
+import time
 import pygame
 
 
@@ -19,6 +20,7 @@ class Player(object):
         self.gun_color = gun_color
         self.player_speed = player_speed
         self.player_radius = player_radius
+        self.gun_end_pos = None
 
     def draw_player(self, screen: pygame.Surface):
         pygame.draw.circle(
@@ -26,12 +28,10 @@ class Player(object):
         )
 
     def _get_mouse_pos(self):
-        return pygame.mouse.get_pos()
+        return pygame.Vector2(pygame.mouse.get_pos())
 
     def draw_gun(self, screen: pygame.Surface):
-        # Convert the mouse position to a vector
-        mouse_pos_tuple = self._get_mouse_pos()
-        self.mouse_pos = pygame.Vector2(mouse_pos_tuple)
+        self.mouse_pos = self._get_mouse_pos()
 
         gun_end_pos_x = (
             self.length_of_gun / math.dist(self.player_pos, self.mouse_pos)
@@ -39,9 +39,21 @@ class Player(object):
         gun_end_pos_y = (
             self.length_of_gun / math.dist(self.player_pos, self.mouse_pos)
         ) * (self.mouse_pos.y - self.player_pos.y) + self.player_pos.y
-        gun_end_pos = (gun_end_pos_x, gun_end_pos_y)
+        self.gun_end_pos = (gun_end_pos_x, gun_end_pos_y)
 
-        pygame.draw.line(screen, self.gun_color, self.player_pos, gun_end_pos, 5)
+        pygame.draw.line(screen, self.gun_color, self.player_pos, self.gun_end_pos, 5)
+
+    def _get_mouse_pressed(self):
+        return pygame.mouse.get_pressed()
+
+    def shoot(self):
+        left_mouse_clicked, _, _ = self._get_mouse_pressed()
+        if left_mouse_clicked:
+            pygame.time.delay(10)
+            bullet = Bullet(self.gun_end_pos, self.mouse_pos, 10)
+            print("Bullet created")
+            return bullet
+        return None
 
     def _get_keys_pressed(self):
         return pygame.key.get_pressed()

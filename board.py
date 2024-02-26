@@ -29,12 +29,11 @@ class Board(object):
 
         self.fps = fps
 
-    def check_exit_game(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT or (
-                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
-            ):
-                self.running = False
+    def check_exit_game(self, event):
+        if event.type == pygame.QUIT or (
+            event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+        ):
+            self.running = False
         return self.running
 
     def draw_background(self):
